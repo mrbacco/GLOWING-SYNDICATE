@@ -1,0 +1,23 @@
+{#
+File:     backend/app/templates/not_found.html
+Author:   mrbacco04@gmail.com
+GitHub:   https://github.com/mrbacco
+Created:  2026-10-20
+Updated:  2026-10-20
+Project:  SYNDICATE
+License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+
+Shown for a member page link that doesn't exist (mistyped, or the member was removed).
+#}{% extends "base.html" %}
+
+{% block title %}Link not found{% endblock %}
+
+{% block content %}
+<header>
+  <h1>This link doesn't work</h1>
+</header>
+<section class="card">
+  <p>It may have been copied wrongly, or it's no longer in use.</p>
+  <p>Ask your syndicate organiser to send you your link again.</p>
+</section>
+{% endblock %}

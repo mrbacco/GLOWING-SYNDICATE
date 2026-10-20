@@ -1,0 +1,12 @@
+# File:     android/.gitattributes
+# Author:   mrbacco04@gmail.com
+# GitHub:   https://github.com/mrbacco
+# Created:  2026-10-20
+# Updated:  2026-10-20
+# Project:  SYNDICATE
+# License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+
+# Keep line endings correct for the Gradle scripts on every OS.
+gradlew      text eol=lf
+*.bat        text eol=crlf
+*.jar        binary

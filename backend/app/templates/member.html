@@ -1,0 +1,83 @@
+{#
+File:     backend/app/templates/member.html
+Author:   mrbacco04@gmail.com
+GitHub:   https://github.com/mrbacco
+Created:  2026-10-20
+Updated:  2026-10-20
+Project:  SYNDICATE
+License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+
+One member's page: am I paid up, what do we play, did we win? Built by app/api/member_page.py.
+#}{% extends "base.html" %}
+
+{% macro balls(numbers, matched=[], bonus=None, matched_bonus=None) -%}
+<ul class="balls">
+  {%- for n in numbers %}
+  <li class="ball{% if n in matched %} hit{% elif n == matched_bonus %} bonus{% endif %}">{{ n }}{% if n in matched %}<span class="sr"> (match)</span>{% elif n == matched_bonus %}<span class="sr"> (bonus match)</span>{% endif %}</li>
+  {%- endfor %}
+  {%- if bonus is not none %}
+  <li class="plus" aria-hidden="true">+</li>
+  <li class="ball bonus"><span class="sr">bonus </span>{{ bonus }}</li>
+  {%- endif %}
+</ul>
+{%- endmacro %}
+
+{% block title %}{{ syndicate }} · {{ member }}{% endblock %}
+
+{% block content %}
+<header>
+  <p class="eyebrow">{{ syndicate }}</p>
+  <h1>Hi {{ member }}</h1>
+</header>
+
+<section class="card status {{ 'owes' if status.owes else 'paid' }}" aria-label="Your payments">
+  <p class="headline">{{ status.headline }}</p>
+  <p>{{ status.detail }}</p>
+</section>
+<section class="card" aria-label="This week">
+  <p><strong>{{ week_title }}</strong></p>
+  <p class="muted">{{ week_line }}</p>
+</section>
+
+<h2>Latest result</h2>
+{% set r = results %}
+{% if r.latest_draw %}
+<section class="card latest">
+  <p><strong>{{ r.latest_draw.title }}</strong></p>
+  {{ balls(r.latest_draw.numbers, bonus=r.latest_draw.bonus) }}
+  {% if r.verdict %}<p class="verdict">{{ r.verdict }}</p>{% endif %}
+</section>
+{% for row in r.results %}
+<section class="card">
+  {{ balls(row.numbers, matched=row.matched, matched_bonus=r.latest_draw.bonus if row.bonus_matched else None) }}
+  <p class="{{ 'won' if row.won else 'muted' }}">{{ row.text }}</p>
+  {% if row.prize_tier %}<p class="tier">Prize tier: {{ row.prize_tier }}{% if row.prize_amount %} · {{ row.prize_amount }}{% endif %}</p>{% endif %}
+</section>
+{% endfor %}
+{% else %}
+<p class="muted">{{ r.empty_text }}</p>
+{% endif %}
+
+<h2>Our lines</h2>
+<p class="muted">{{ lines.summary.lines[0] }}</p>
+{% for line in lines.lines %}
+<section class="card">{{ balls(line.numbers) }}</section>
+{% else %}
+<p class="muted">{{ lines.empty_text }}</p>
+{% endfor %}
+
+{% if r.previous_draws %}
+<h2>Previous draws</h2>
+{% for d in r.previous_draws %}
+<div class="draw">
+  <p class="date">{{ d.title }}</p>
+  {{ balls(d.numbers, bonus=d.bonus) }}
+</div>
+{% endfor %}
+{% endif %}
+
+<footer>
+  <p>Your organiser keeps this page up to date. It only shows what they record: it doesn't take payments or buy tickets.</p>
+  <p>This link is just for you, so please don't share it.</p>
+</footer>
+{% endblock %}

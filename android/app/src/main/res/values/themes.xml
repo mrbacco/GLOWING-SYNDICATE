@@ -1,0 +1,13 @@
+<!--
+    File:     android/app/src/main/res/values/themes.xml
+    Author:   mrbacco04@gmail.com
+    GitHub:   https://github.com/mrbacco
+    Created:  2026-10-20
+    Updated:  2026-10-20
+    Project:  SYNDICATE
+    License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+-->
+<resources>
+    <!-- Window theme only; the app's colours come from Compose (ui/theme/Theme.kt). -->
+    <style name="Theme.Syndicate" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

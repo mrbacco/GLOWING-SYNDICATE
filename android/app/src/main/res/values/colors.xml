@@ -1,0 +1,12 @@
+<!--
+    File:     android/app/src/main/res/values/colors.xml
+    Author:   mrbacco04@gmail.com
+    GitHub:   https://github.com/mrbacco
+    Created:  2026-10-20
+    Updated:  2026-10-20
+    Project:  SYNDICATE
+    License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+-->
+<resources>
+    <color name="ic_launcher_background">#0B6E4F</color>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File:     android/app/src/main/res/xml/network_security_config.xml
+    Author:   mrbacco04@gmail.com
+    GitHub:   https://github.com/mrbacco
+    Created:  2026-10-20
+    Updated:  2026-10-20
+    Project:  SYNDICATE
+    License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+-->
+<!-- Release builds: HTTPS only. Debug builds replace this file (src/debug). -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

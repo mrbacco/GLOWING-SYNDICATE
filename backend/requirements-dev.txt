@@ -1,0 +1,11 @@
+# File:     backend/requirements-dev.txt
+# Author:   mrbacco04@gmail.com
+# GitHub:   https://github.com/mrbacco
+# Created:  2026-10-20
+# Updated:  2026-10-20
+# Project:  SYNDICATE
+# License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+
+-r requirements.txt
+pytest==8.3.4
+httpx==0.28.1

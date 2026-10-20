@@ -1,0 +1,16 @@
+# File:     backend/requirements.txt
+# Author:   mrbacco04@gmail.com
+# GitHub:   https://github.com/mrbacco
+# Created:  2026-10-20
+# Updated:  2026-10-20
+# Project:  SYNDICATE
+# License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+
+fastapi==0.115.6
+uvicorn==0.34.0
+sqlalchemy==2.0.36
+pydantic==2.10.4
+# Time zone data for Europe/Dublin (Windows has none built in).
+tzdata==2024.2
+# HTML pages (the member page).
+jinja2==3.1.4

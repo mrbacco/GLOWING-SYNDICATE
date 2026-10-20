@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File:     android/app/src/debug/res/xml/network_security_config.xml
+    Author:   mrbacco04@gmail.com
+    GitHub:   https://github.com/mrbacco
+    Created:  2026-10-20
+    Updated:  2026-10-20
+    Project:  SYNDICATE
+    License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+-->
+<!-- Debug builds: also allow plain HTTP to the backend running on the developer's PC. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <!-- The PC as seen from the Android emulator, without adb reverse. -->
+        <domain includeSubdomains="false">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>

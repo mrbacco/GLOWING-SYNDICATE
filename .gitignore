@@ -1,0 +1,52 @@
+# File:     .gitignore
+# Author:   mrbacco04@gmail.com
+# GitHub:   https://github.com/mrbacco
+# Created:  2026-10-20
+# Updated:  2026-10-20
+# Project:  SYNDICATE
+# License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+
+# ---- Python (backend) ----
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.sqlite3
+*.db
+
+# ---- Secrets and local config ----
+.env
+.env.*
+*.log
+
+# ---- Android / Gradle ----
+.kotlin/
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+*.keystore
+*.jks
+captures/
+.externalNativeBuild/
+.cxx/
+
+# ---- IDEs ----
+.idea/
+*.iml
+.vscode/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Office temp files ----
+~$*
+
+# ---- Private documents (kept locally, never pushed) ----
+Syndicate_Product_Plan.docx

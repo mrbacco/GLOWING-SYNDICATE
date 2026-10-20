@@ -1,0 +1,79 @@
+{#
+File:     backend/app/templates/base.html
+Author:   mrbacco04@gmail.com
+GitHub:   https://github.com/mrbacco
+Created:  2026-10-20
+Updated:  2026-10-20
+Project:  SYNDICATE
+License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
+
+Layout and styles for the member pages. Same three colours as the app: green (matches, paid up),
+gold (bonus ball, things to act on) and grey. No scripts and nothing loaded from elsewhere.
+#}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<title>{% block title %}{% endblock %}</title>
+<style>
+  :root {
+    --green: #0B6E4F; --green-tint: #D3EFE3; --on-green-tint: #00382A;
+    --gold: #FFD54F; --on-gold: #261A00;
+    --bg: #FAFAFA; --card: #E9E9E9; --text: #1B1B1B; --muted: #5C5C5C;
+    --ball: #DADADA; --on-ball: #3A3A3A; --hit: #0B6E4F; --on-hit: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --green: #6FD3A8; --green-tint: #0E4D39; --on-green-tint: #D3EFE3;
+      --gold: #FFD54F; --on-gold: #261A00;
+      --bg: #121212; --card: #262626; --text: #E6E6E6; --muted: #B8B8B8;
+      --ball: #3A3A3A; --on-ball: #E0E0E0; --hit: #6FD3A8; --on-hit: #00382A;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 34rem; margin: 0 auto; padding: 20px 16px 40px; }
+  header { margin-bottom: 20px; }
+  .eyebrow { color: var(--muted); font-size: .9rem; margin: 0; }
+  h1 { font-size: 1.6rem; line-height: 1.2; margin: 2px 0 0; }
+  h2 { font-size: 1.05rem; margin: 28px 0 10px; }
+  .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+  .card p { margin: 0; }
+  .card p + p { margin-top: 4px; }
+  .status { padding: 20px 16px; }
+  .status .headline { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+  .status.owes { background: var(--gold); color: var(--on-gold); }
+  .status.paid { background: var(--green-tint); color: var(--on-green-tint); }
+  .latest { background: var(--green-tint); color: var(--on-green-tint); }
+  .muted { color: var(--muted); }
+  .won { color: var(--green); }
+  .tier { color: var(--green); font-weight: 700; font-size: .95rem; }
+  .verdict { font-size: 1.05rem; margin-top: 10px !important; }
+  .balls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 8px; padding: 0; list-style: none; }
+  .ball {
+    width: 2.2rem; height: 2.2rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ball); color: var(--on-ball); font-weight: 700; font-size: .95rem;
+  }
+  .ball.hit { background: var(--hit); color: var(--on-hit); }
+  .ball.bonus { background: var(--gold); color: var(--on-gold); }
+  .plus { font-weight: 700; padding: 0 2px; }
+  .draw { margin-bottom: 14px; }
+  .draw .date { font-weight: 600; font-size: .95rem; margin: 0; }
+  .draw .balls { margin: 6px 0 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  footer { margin-top: 36px; color: var(--muted); font-size: .85rem; }
+  footer p { margin: 6px 0; }
+</style>
+</head>
+<body>
+<main>
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>
