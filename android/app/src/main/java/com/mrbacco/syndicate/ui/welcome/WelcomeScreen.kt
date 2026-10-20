@@ -12,6 +12,7 @@ package com.mrbacco.syndicate.ui.welcome
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -35,16 +38,22 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -61,10 +70,14 @@ private val features = listOf(
     Feature(Icons.Filled.Share, "Members see their own page", "Each member gets a private link to their payments and the results. Nothing to install."),
 )
 
-/** The landing page, shown each time the app opens; "Get started" leads to My syndicates. */
+/**
+ * The landing page, shown each time the app opens; "Get started" leads to My syndicates.
+ * [onGetStarted] gets whether "Don't show this again" was ticked.
+ */
 @Composable
-fun WelcomeScreen(onGetStarted: () -> Unit) {
+fun WelcomeScreen(onGetStarted: (dontShowAgain: Boolean) -> Unit) {
     val colors = MaterialTheme.colorScheme
+    var dontShowAgain by rememberSaveable { mutableStateOf(false) }
     Column(
         Modifier
             .fillMaxSize()
@@ -120,7 +133,23 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Button(onClick = onGetStarted, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(value = dontShowAgain, role = Role.Checkbox, onValueChange = { dontShowAgain = it }),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(checked = dontShowAgain, onCheckedChange = null)
+                Spacer(Modifier.width(8.dp))
+                // White in dark mode; white would vanish on the light background, so dark text there.
+                Text(
+                    "Don't show this again",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (isSystemInDarkTheme()) Color.White else colors.onBackground,
+                )
+            }
+            Button(onClick = { onGetStarted(dontShowAgain) }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
                 Text("Get started", style = MaterialTheme.typography.titleMedium)
             }
             Text(
