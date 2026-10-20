@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.mrbacco.syndicate.R
 
 // The launcher icon's background, so the logo looks the same here as on the home screen.
-private val LogoGreen = Color(0xFF0B6E4F)
+private val LogoBackground = Color.White
 
 private data class Feature(val icon: ImageVector, val title: String, val text: String)
 
@@ -79,9 +79,9 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                 .padding(horizontal = 24.dp, vertical = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(Modifier.size(112.dp).background(LogoGreen, CircleShape), contentAlignment = Alignment.Center) {
+            Box(Modifier.size(112.dp).background(LogoBackground, CircleShape), contentAlignment = Alignment.Center) {
                 Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    painter = painterResource(R.mipmap.ic_launcher_foreground),
                     contentDescription = null,
                     modifier = Modifier.size(112.dp),
                 )
