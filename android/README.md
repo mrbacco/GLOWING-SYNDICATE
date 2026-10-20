@@ -41,6 +41,7 @@ app/src/main/java/com/mrbacco/syndicate/
 │   ├── model/Screens.kt         what the backend sends for each screen
 │   ├── SyndicateApi.kt          the backend's HTTP endpoints (Retrofit)
 │   ├── SyndicateRepository.kt   calls the backend, turns failures into messages
+│   ├── AppPrefs.kt              small settings kept on the phone (welcome page seen)
 │   └── AppContainer.kt          creates the repository with the backend address
 ├── domain/
 │   ├── LineInput.kt             reads a typed line (limits come from the server)
@@ -50,6 +51,7 @@ app/src/main/java/com/mrbacco/syndicate/
     ├── theme/Theme.kt           colours, light and dark
     ├── navigation/SyndicateNavHost.kt  screen navigation
     ├── components/              number balls, input dialog, loading and error states
+    ├── welcome/                 landing page, shown until "Get started" is tapped
     ├── list/                    "My syndicates" screen
     └── detail/                  Members / Lines / Results tabs, add member dialog
 ```
