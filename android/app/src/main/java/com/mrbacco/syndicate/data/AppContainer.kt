@@ -12,7 +12,7 @@ package com.mrbacco.syndicate.data
 
 import com.mrbacco.syndicate.BuildConfig
 
-/** Holds the app-wide objects. The backend address is set per build type in app/build.gradle.kts. */
+/** Holds the app-wide objects. The backend address and access key come from app/build.gradle.kts. */
 object AppContainer {
-    val repository: SyndicateRepository by lazy { SyndicateRepository.create(BuildConfig.API_BASE_URL) }
+    val repository: SyndicateRepository by lazy { SyndicateRepository.create(BuildConfig.API_BASE_URL, BuildConfig.API_KEY) }
 }

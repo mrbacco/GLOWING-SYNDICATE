@@ -8,6 +8,7 @@
 
 """Shared pieces the endpoints ask for: the database session, today's date, lookups."""
 
+import secrets
 from collections.abc import Iterator
 from datetime import date
 from typing import Annotated
@@ -26,6 +27,18 @@ def get_session(request: Request) -> Iterator[Session]:
 def get_today() -> date:
     """Overridden in tests to pin the date."""
     return config.today()
+
+
+def require_api_key(request: Request) -> None:
+    """Lets a request through only with the organiser's key, when the server has one set."""
+    expected = request.app.state.api_key
+    if expected is None:
+        return
+    scheme, _, given = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not secrets.compare_digest(given.strip().encode(), expected.encode()):
+        raise HTTPException(
+            status_code=401, detail="Missing or wrong access key.", headers={"WWW-Authenticate": "Bearer"}
+        )
 
 
 def get_public_url(request: Request) -> str:

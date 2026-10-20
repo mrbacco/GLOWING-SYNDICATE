@@ -8,12 +8,25 @@
  * License:  Apache-2.0 OR AGPL-3.0-or-later OR LicenseRef-Commercial
  */
 
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
+
+// Server address and access key come from local.properties, which git never uploads:
+//   syndicate.apiUrl=https://<hosted server>/   (release builds)
+//   syndicate.apiKey=<the server's SYNDICATE_API_KEY>
+//   syndicate.debugApiUrl=...                    (optional: point debug builds elsewhere)
+//   syndicate.debugApiKey=...
+val localProps = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+fun local(name: String, default: String = ""): String = localProps.getProperty(name, default).trim()
+fun quoted(value: String): String = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
 android {
     namespace = "com.mrbacco.syndicate"
@@ -29,13 +42,15 @@ android {
 
     buildTypes {
         debug {
-            // The backend on the PC. `adb reverse tcp:8000 tcp:8000` makes the phone's (or the
-            // emulator's) 127.0.0.1:8000 reach the PC, over USB or wireless debugging.
-            buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8000/\"")
+            // By default the backend on the PC: `adb reverse tcp:8000 tcp:8000` makes the phone's
+            // (or the emulator's) 127.0.0.1:8000 reach the PC, over USB or wireless debugging.
+            buildConfigField("String", "API_BASE_URL", quoted(local("syndicate.debugApiUrl", "http://127.0.0.1:8000/")))
+            buildConfigField("String", "API_KEY", quoted(local("syndicate.debugApiKey")))
         }
         release {
-            // TODO(hosting): the address of the hosted backend once it is on Fly.io or Render.
-            buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8000/\"")
+            // The hosted backend (HTTPS only, see network_security_config.xml).
+            buildConfigField("String", "API_BASE_URL", quoted(local("syndicate.apiUrl", "https://syndicate.invalid/")))
+            buildConfigField("String", "API_KEY", quoted(local("syndicate.apiKey")))
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

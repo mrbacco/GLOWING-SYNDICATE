@@ -22,6 +22,13 @@ PUBLIC_URL = os.environ.get("SYNDICATE_PUBLIC_URL", "http://127.0.0.1:8000").rst
 # Fetch Lotto results from lottery.ie by itself after each draw. Set to 0 to switch it off.
 FETCH_RESULTS = os.environ.get("SYNDICATE_FETCH_RESULTS", "1") != "0"
 
+# "production" when hosted: then an API key is required and the interactive docs are switched off.
+PRODUCTION = os.environ.get("SYNDICATE_ENV", "development") == "production"
+
+# The organiser's access key. Every API call must send it as "Authorization: Bearer <key>";
+# member pages (/m/<code>) and /health stay open. Unset means no key is checked (development only).
+API_KEY = os.environ.get("SYNDICATE_API_KEY") or None
+
 # Syndicates are Irish, so "this week" and "today" follow Irish time, not the server's.
 TIMEZONE = ZoneInfo(os.environ.get("SYNDICATE_TIMEZONE", "Europe/Dublin"))
 

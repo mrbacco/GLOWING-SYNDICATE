@@ -78,7 +78,8 @@ class SyndicateRepository(private val api: SyndicateApi) {
     } catch (e: IOException) {
         throw ApiException("Can't reach the server. Check that it's running, then try again.", e)
     } catch (e: HttpException) {
-        throw ApiException(serverMessage(e) ?: "The server had a problem (error ${e.code()}).", e)
+        val message = if (e.code() == 401) "The server didn't accept this app's access key. Check syndicate.apiKey." else null
+        throw ApiException(message ?: serverMessage(e) ?: "The server had a problem (error ${e.code()}).", e)
     }
 
     companion object {
@@ -89,8 +90,16 @@ class SyndicateRepository(private val api: SyndicateApi) {
             explicitNulls = false
         }
 
-        fun create(baseUrl: String): SyndicateRepository {
+        /** [apiKey] is the server's SYNDICATE_API_KEY; empty when the server doesn't use one (on the PC). */
+        fun create(baseUrl: String, apiKey: String = ""): SyndicateRepository {
             val client = OkHttpClient.Builder()
+                .addInterceptor { chain ->
+                    val request = chain.request()
+                    chain.proceed(
+                        if (apiKey.isEmpty()) request
+                        else request.newBuilder().header("Authorization", "Bearer $apiKey").build()
+                    )
+                }
                 .connectTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(15, TimeUnit.SECONDS)
                 .build()
