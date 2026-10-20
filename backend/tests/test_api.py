@@ -39,7 +39,11 @@ def test_members_screen_matches_the_app(seeded):
     assert members["Aoife"]["status"] == "All paid up"
     assert members["Ciarán"]["status"] == "Owes €5.00 (1 week)"
     assert members["Seán"]["status"] == "Owes €10.00 (2 weeks)"
-    assert members["Seán"]["message"].startswith("Hi Seán, a quick reminder for Office Syndicate: you owe €10.00.")
+    # The sample Sat 17 Oct draw won Match 3 (amounts not loaded in the sample), and Seán hadn't paid that week.
+    assert members["Seán"]["message"].startswith(
+        "Hi Seán! We won in the Sat 17 Oct 2026 draw, but you hadn't paid for that week, so there's no share "
+        "for you this time. A quick reminder for Office Syndicate: you owe €10.00."
+    )
     assert members["Seán"]["message"].endswith(members["Seán"]["page_url"])
     assert members["Seán"]["page_url"].startswith("http://127.0.0.1:8000/m/")
     assert screen["week_start"] == "2026-10-19"

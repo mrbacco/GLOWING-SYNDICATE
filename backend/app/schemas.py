@@ -232,4 +232,6 @@ class ResultsScreen(BaseModel):
     previous_draws: list[DrawCard]
     # Who shares the latest draw's winnings and how much each gets; None if nothing was won.
     winnings: SummaryCard | None = None
+    # A summary of the latest draw for the syndicate's group chat. Names nobody.
+    group_message: str | None = None
     empty_text: str | None

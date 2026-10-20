@@ -43,7 +43,12 @@ def page_url(public_url: str, member: models.Member) -> str:
     return f"{public_url}/m/{member.share_token}"
 
 
-def members(syndicate: models.Syndicate, today: date, public_url: str) -> schemas.MembersScreen:
+def members(
+    syndicate: models.Syndicate, today: date, public_url: str, draws: list[models.Draw] = ()
+) -> schemas.MembersScreen:
+    """[draws] newest first; if the latest one the syndicate plays won, messages mention each share."""
+    latest = latest_played_draw(syndicate, list(draws))
+    split = draw_split(syndicate, latest) if latest else None
     rows = []
     for member in syndicate.members:
         url = page_url(public_url, member)
@@ -64,7 +69,9 @@ def members(syndicate: models.Syndicate, today: date, public_url: str) -> schema
                 weeks_owed=b.weeks_owed,
                 amount_owed_cents=b.amount_owed_cents,
                 status=status,
-                message=text.member_message(member.name, syndicate.name, b.amount_owed_cents, url),
+                message=text.member_message(
+                    member.name, syndicate.name, b.amount_owed_cents, url, win_note(split, member.id)
+                ),
                 page_url=url,
             )
         )
@@ -159,8 +166,65 @@ def results(syndicate: models.Syndicate, draws: list[models.Draw]) -> schemas.Re
         results=rows,
         previous_draws=[_draw_card(d) for d in played[1 : 1 + PREVIOUS_DRAWS_SHOWN]],
         winnings=winnings_card(split) if split else None,
+        group_message=group_message(syndicate, latest, rows, split),
         empty_text=None,
     )
+
+
+def win_note(split: winnings.Split | None, member_id: str) -> str | None:
+    """One sentence for a member's message about the latest win, or None if there's nothing to say."""
+    if split is None:
+        return None
+    when = f"the {text.draw_date(split.draw_date)} draw"
+    reason = next((m.reason for m in split.left_out if m.id == member_id), None)
+    if reason == "joined after this draw":
+        return None  # the win is nothing to do with them
+    if reason:  # hadn't paid for that week
+        won = f"{text.amount(split.total_cents)} " if split.all_published and split.total_cents else ""
+        return f"We won {won}in {when}, but you {reason}, so there's no share for you this time."
+    if not split.all_published:
+        return f"Good news: we won in {when}! Your share will be on your page once the prize amounts are out."
+    if not split.total_cents:
+        return f"Good news: we won {text.names(split.non_cash)} in {when}." if split.non_cash else None
+    return (
+        f"Good news: we won {text.amount(split.total_cents)} in {when}, "
+        f"and your share is {text.euro(split.share_of(member_id))}."
+    )
+
+
+def group_message(
+    syndicate: models.Syndicate,
+    draw: models.Draw,
+    rows: list[schemas.LineResultRow],
+    split: winnings.Split | None,
+) -> str:
+    """The latest result for the syndicate's group chat. It never names who paid or who owes."""
+    numbers = " ".join(str(n) for n in draw.numbers)
+    out = [
+        f"{syndicate.name}: {text.draw_date(draw.draw_date)} results",
+        f"Numbers: {numbers} + bonus {draw.bonus}",
+    ]
+    tiers = [r.prize_tier for r in rows if r.prize_tier]
+    if not syndicate.lines:
+        out.append("We don't have any lines entered yet.")
+    elif not tiers:
+        out.append(f"No win this time across our {len(syndicate.lines)} {'line' if len(syndicate.lines) == 1 else 'lines'}.")
+    elif split is None or not split.all_published:
+        out.append(f"We won ({text.names(tiers)})! The prize amount isn't published yet.")
+    else:
+        won = text.amount(split.total_cents) if split.total_cents else text.names(split.non_cash)
+        out.append(f"We won {won} ({text.names(tiers)})!")
+        if split.total_cents and split.sharers:
+            count = len(split.sharers)
+            who = "the 1 member" if count == 1 else f"the {count} members"
+            out.append(
+                f"Shared by {who} who paid for the week of {text.short_date(split.week)}: {text.euro(split.each_cents)} each."
+            )
+    out.append(
+        f"Reminder: it's {text.euro(syndicate.weekly_cost_cents)} a week. If you haven't paid this week yet, "
+        "please do, and check your own page for your payments."
+    )
+    return "\n".join(out)
 
 
 def latest_played_draw(syndicate: models.Syndicate, draws: list[models.Draw]) -> models.Draw | None:

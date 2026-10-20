@@ -27,8 +27,8 @@ def syndicate_list(session: SessionDep):
 
 
 @router.get("/syndicates/{syndicate_id}/members", response_model=schemas.MembersScreen)
-def members(syndicate: SyndicateDep, today: TodayDep, public_url: PublicUrlDep):
-    return screens.members(syndicate, today, public_url)
+def members(syndicate: SyndicateDep, today: TodayDep, public_url: PublicUrlDep, session: SessionDep):
+    return screens.members(syndicate, today, public_url, recent_draws(session))
 
 
 @router.get("/syndicates/{syndicate_id}/lines", response_model=schemas.LinesScreen)

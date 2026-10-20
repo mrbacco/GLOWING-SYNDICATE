@@ -52,3 +52,32 @@ def test_results_screen_and_member_page(seeded):
     assert "Your share of the latest win: €1.33" in aoife and "Seán" not in aoife
     sean = unescape(seeded.get(url["Seán"].removeprefix("http://127.0.0.1:8000")).text)
     assert "you hadn't paid for that week" in sean
+
+
+def test_messages_mention_each_members_share(seeded):
+    importer.fetch_and_save(seeded.app.state.sessionmaker, lambda: page(SATURDAY_17))
+    members = {m["name"]: m for m in seeded.get("/screens/syndicates/s-office/members").json()["members"]}
+    assert members["Aoife"]["message"].startswith(
+        "Hi Aoife! Good news: we won €4 in the Sat 17 Oct 2026 draw, and your share is €1.33. Your page for Office Syndicate:"
+    )
+    assert "We won €4 in the Sat 17 Oct 2026 draw, but you hadn't paid for that week" in members["Seán"]["message"]
+    assert "you owe €10.00" in members["Seán"]["message"]
+
+
+def test_group_message_names_nobody(seeded):
+    importer.fetch_and_save(seeded.app.state.sessionmaker, lambda: page(SATURDAY_17))
+    message = seeded.get("/screens/syndicates/s-office/results").json()["group_message"]
+    assert message.splitlines() == [
+        "Office Syndicate: Sat 17 Oct 2026 results",
+        "Numbers: 13 21 27 38 41 43 + bonus 42",
+        "We won €4 (Match 3)!",
+        "Shared by the 3 members who paid for the week of 12 Oct: €1.33 each.",
+        "Reminder: it's €5.00 a week. If you haven't paid this week yet, please do, and check your own page for your payments.",
+    ]
+    for name in ("Aoife", "Ciarán", "Niamh", "Seán"):
+        assert name not in message
+
+
+def test_group_message_without_a_win(seeded):
+    message = seeded.get("/screens/syndicates/s-family/results").json()["group_message"]
+    assert "No win this time across our 1 line." in message

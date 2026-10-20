@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -314,12 +315,15 @@ private fun MemberCard(row: MemberRow, onPaidChange: (String, Boolean) -> Unit, 
 }
 
 /** Opens the share sheet (WhatsApp, SMS, ...) with [text], for members without a number. */
-private fun shareReminder(context: Context, text: String) {
+private fun shareReminder(context: Context, text: String) = shareText(context, text, "Send reminder")
+
+/** Opens the share sheet with [text], e.g. to post in the syndicate's WhatsApp group. */
+private fun shareText(context: Context, text: String, title: String) {
     val send = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_TEXT, text)
     }
-    context.startActivity(Intent.createChooser(send, "Send reminder"))
+    context.startActivity(Intent.createChooser(send, title))
 }
 
 /** Opens the SMS app on a conversation with [phone], with [text] ready to send. */
@@ -376,6 +380,12 @@ private fun LazyListScope.resultsTab(screen: ResultsScreen) {
                 Text("Latest draw · ${latest.title}", style = MaterialTheme.typography.titleMedium)
                 BallRow(latest.numbers, bonus = latest.bonus)
                 screen.verdict?.let { Text(it, style = MaterialTheme.typography.bodyLarge) }
+                screen.groupMessage?.let { message ->
+                    val context = LocalContext.current
+                    Button(onClick = { shareText(context, message, "Message the group") }) {
+                        Text("Message the group")
+                    }
+                }
             }
         }
     }

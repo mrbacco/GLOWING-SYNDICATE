@@ -51,8 +51,18 @@ def cents(count: int) -> str:
     return "1 cent" if count == 1 else f"{count} cents"
 
 
-def member_message(name: str, syndicate: str, owed_cents: int, page_url: str) -> str:
-    """A payment reminder if the member owes money, otherwise their page link. Both carry the link."""
+def member_message(name: str, syndicate: str, owed_cents: int, page_url: str, win_note: str | None = None) -> str:
+    """A payment reminder if the member owes money, otherwise their page link. Both carry the link.
+
+    [win_note] is a sentence about the latest win and this member's share, put first when there is one.
+    """
+    if win_note:
+        if owed_cents == 0:
+            return f"Hi {name}! {win_note} Your page for {syndicate}: {page_url}"
+        return (
+            f"Hi {name}! {win_note} A quick reminder for {syndicate}: you owe {euro(owed_cents)}. Thanks! "
+            f"Your page: {page_url}"
+        )
     if owed_cents == 0:
         return f"Hi {name}, here's your page for {syndicate}, with your payments and our results: {page_url}"
     return (

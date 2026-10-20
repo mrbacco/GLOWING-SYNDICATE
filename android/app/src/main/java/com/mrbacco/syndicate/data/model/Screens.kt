@@ -113,6 +113,8 @@ data class ResultsScreen(
     val previousDraws: List<DrawCard>,
     /** Who shares the latest draw's winnings and how much each gets; null if nothing was won. */
     val winnings: SummaryCard? = null,
+    /** The latest result for the syndicate's group chat; it names nobody. */
+    val groupMessage: String? = null,
     val emptyText: String? = null,
 )
 
