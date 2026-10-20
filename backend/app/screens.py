@@ -11,7 +11,7 @@
 from datetime import date
 
 from app import models, schemas
-from app.domain import lotto, phones, text
+from app.domain import lotto, phones, text, winnings
 from app.domain.ledger import balance
 from app.domain.weeks import week_start
 
@@ -143,6 +143,7 @@ def results(syndicate: models.Syndicate, draws: list[models.Draw]) -> schemas.Re
         )
         for line, result in checked
     ]
+    split = draw_split(syndicate, latest)
     if not rows:
         verdict = "Add your lines to check them automatically."
     elif rows[0].prize_tier:
@@ -157,5 +158,67 @@ def results(syndicate: models.Syndicate, draws: list[models.Draw]) -> schemas.Re
         verdict=verdict,
         results=rows,
         previous_draws=[_draw_card(d) for d in played[1 : 1 + PREVIOUS_DRAWS_SHOWN]],
+        winnings=winnings_card(split) if split else None,
         empty_text=None,
     )
+
+
+def latest_played_draw(syndicate: models.Syndicate, draws: list[models.Draw]) -> models.Draw | None:
+    days = set(syndicate.draw_days)
+    return next((d for d in draws if lotto.DrawDay.of(d.draw_date) in days), None)
+
+
+def draw_split(syndicate: models.Syndicate, draw: models.Draw) -> winnings.Split | None:
+    """How the syndicate's winnings in [draw] are shared, or None if no line won anything."""
+    rules = lotto.rules_for(draw.draw_date)
+    prizes = []
+    for line in syndicate.lines:
+        tier = lotto.check_line(line.numbers, draw.numbers, draw.bonus, rules).tier
+        if tier:
+            prize = draw.prize_for(tier.code)
+            prizes.append(winnings.LinePrize(prize.prize_cents, prize.prize_text) if prize else winnings.LinePrize())
+    if not prizes:
+        return None
+    members = [
+        winnings.MemberIn(m.id, m.name, m.joined, frozenset(p.week_start for p in m.payments))
+        for m in syndicate.members
+    ]
+    return winnings.split_winnings(draw.draw_date, prizes, members)
+
+
+def winnings_card(split: winnings.Split) -> schemas.SummaryCard:
+    lines_won = f"{split.winning_lines} winning {'line' if split.winning_lines == 1 else 'lines'}"
+    out = []
+    if not split.all_published:
+        out.append(f"{lines_won.capitalize()}. The prize amounts aren't published yet, so the split will show once they are.")
+    else:
+        out.append(f"Total: {text.amount(split.total_cents)} from {lines_won}")
+        out.extend(f"Also won: {prize} (not shared as cash)" for prize in split.non_cash)
+        week = text.short_date(split.week)
+        if not split.sharers:
+            out.append(f"No one had paid for the week of {week}, so there's no one to share it with yet.")
+        elif split.total_cents:
+            count = len(split.sharers)
+            out.append(
+                f"Shared by {'the 1 member' if count == 1 else f'{count} members'} who paid for the week of {week}: "
+                f"{text.euro(split.each_cents)} each"
+            )
+            out.append(text.names([m.name for m in split.sharers]))
+            if split.left_over_cents:
+                out.append(f"{text.cents(split.left_over_cents)} left over for the syndicate kitty")
+    if split.left_out:
+        out.append("Not included: " + "; ".join(f"{m.name} ({m.reason})" for m in split.left_out))
+    return schemas.SummaryCard(title=f"Winnings · {text.draw_date(split.draw_date)}", lines=out)
+
+
+def my_share(split: winnings.Split | None, member_id: str) -> str | None:
+    """One line for a member's page about their share of the latest win, or None if nothing was won."""
+    if split is None:
+        return None
+    if not split.all_published:
+        return "We won! Your share will show once the prize amounts are published."
+    share = split.share_of(member_id)
+    if share is not None:
+        return f"Your share of the latest win: {text.euro(share)}" if split.total_cents else None
+    reason = next((m.reason for m in split.left_out if m.id == member_id), None)
+    return f"No share of the latest win for you: you {reason}." if reason else None

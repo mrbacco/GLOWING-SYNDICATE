@@ -40,6 +40,17 @@ def weeks(count: int) -> str:
     return "1 week" if count == 1 else f"{count} weeks"
 
 
+def names(items: list[str]) -> str:
+    """["Aoife", "Ciarán", "Niamh"] -> "Aoife, Ciarán and Niamh"."""
+    if len(items) <= 1:
+        return "".join(items)
+    return f"{', '.join(items[:-1])} and {items[-1]}"
+
+
+def cents(count: int) -> str:
+    return "1 cent" if count == 1 else f"{count} cents"
+
+
 def member_message(name: str, syndicate: str, owed_cents: int, page_url: str) -> str:
     """A payment reminder if the member owes money, otherwise their page link. Both carry the link."""
     if owed_cents == 0:

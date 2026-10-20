@@ -52,6 +52,14 @@ wrong ones.
 - **Once, now:** `.venv\Scripts\python -m app.results`, or `POST /draws/fetch` (at most once a minute).
 - **By hand:** `PUT /draws/{date}` still works, e.g. if lottery.ie changes its page.
 
+## Winnings split
+
+When the syndicate's lines win in the latest draw, the Results screen gets a winnings card: the
+total from lottery.ie's published prize amounts, divided equally between the members who had
+joined by the draw and paid for that draw's week. Cents that don't divide go to the syndicate
+kitty; members left out are named with the reason. Non-cash prizes are listed, not divided.
+Each member's page shows only their own share (`app/domain/winnings.py`).
+
 ## Member page
 
 Every member has a private web page at `/m/<code>`, for members who don't have the app
@@ -109,6 +117,7 @@ app/
 └── domain/        rules with no database or web code
     ├── lotto.py   game rules by date (6/47 until 2 Sep 2026, then 6/45), line checking
     ├── ledger.py  who owes what
+    ├── winnings.py  who shares a win and how much each gets
     ├── weeks.py   Monday-to-Sunday payment weeks
     ├── text.py    euro amounts, dates, reminder messages
     └── phones.py  phone numbers for WhatsApp links
@@ -121,6 +130,6 @@ app/
 - Migrations (Alembic), added together with Postgres. Until then, a change to the tables means
   running `python -m app.seed` again, which wipes the data.
 - A way to give a member a new link if theirs was shared by mistake.
-- Winnings split and notifications: next steps.
+- Notifications: next step.
 - The PREDICTOR project's scraper was not found on this PC, so this one was written fresh; the
   two can be compared once PREDICTOR is available.

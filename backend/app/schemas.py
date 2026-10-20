@@ -230,4 +230,6 @@ class ResultsScreen(BaseModel):
     verdict: str | None  # "Possible win: Match 3! Check the ticket."
     results: list[LineResultRow]
     previous_draws: list[DrawCard]
+    # Who shares the latest draw's winnings and how much each gets; None if nothing was won.
+    winnings: SummaryCard | None = None
     empty_text: str | None

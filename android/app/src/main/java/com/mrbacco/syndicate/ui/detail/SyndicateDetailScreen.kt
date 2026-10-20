@@ -379,6 +379,7 @@ private fun LazyListScope.resultsTab(screen: ResultsScreen) {
             }
         }
     }
+    screen.winnings?.let { card -> item { SummaryCard(card) } }
     items(screen.results, key = { it.lineId }) { result ->
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {

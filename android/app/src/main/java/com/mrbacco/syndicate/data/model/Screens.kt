@@ -111,6 +111,8 @@ data class ResultsScreen(
     val verdict: String? = null,
     val results: List<LineResultRow>,
     val previousDraws: List<DrawCard>,
+    /** Who shares the latest draw's winnings and how much each gets; null if nothing was won. */
+    val winnings: SummaryCard? = null,
     val emptyText: String? = null,
 )
 

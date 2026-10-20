@@ -44,6 +44,9 @@ def member_page(token: str, request: Request, session: SessionDep, today: TodayD
         return templates.TemplateResponse(request, "not_found.html", status_code=404, headers=PRIVATE_HEADERS)
 
     syndicate = member.syndicate
+    draws = recent_draws(session)
+    latest = screens.latest_played_draw(syndicate, draws)
+    my_share = screens.my_share(screens.draw_split(syndicate, latest) if latest else None, member.id)
     members = screens.members(syndicate, today, public_url)
     me = next(row for row in members.members if row.id == member.id)
     paid_count = sum(row.paid_this_week for row in members.members)
@@ -69,6 +72,7 @@ def member_page(token: str, request: Request, session: SessionDep, today: TodayD
         "week_line": f"{paid_count} of {len(members.members)} members paid this week",
         "draw_days": ", ".join(d.label for d in syndicate.draw_days),
         "lines": screens.lines(syndicate),
-        "results": screens.results(syndicate, recent_draws(session)),
+        "results": screens.results(syndicate, draws),
+        "my_share": my_share,
     }
     return templates.TemplateResponse(request, "member.html", context, headers=PRIVATE_HEADERS)

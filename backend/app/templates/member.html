@@ -34,6 +34,12 @@ One member's page: am I paid up, what do we play, did we win? Built by app/api/m
   <p class="headline">{{ status.headline }}</p>
   <p>{{ status.detail }}</p>
 </section>
+{% if my_share %}
+<section class="card latest" aria-label="Your winnings">
+  {# Only this member's own share: the page never names other members. #}
+  <p><strong>{{ my_share }}</strong></p>
+</section>
+{% endif %}
 <section class="card" aria-label="This week">
   <p><strong>{{ week_title }}</strong></p>
   <p class="muted">{{ week_line }}</p>
