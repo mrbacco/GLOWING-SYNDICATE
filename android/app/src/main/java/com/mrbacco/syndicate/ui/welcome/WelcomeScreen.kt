@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,7 +61,7 @@ private val features = listOf(
     Feature(Icons.Filled.Share, "Members see their own page", "Each member gets a private link to their payments and the results. Nothing to install."),
 )
 
-/** Shown the first time the app opens, until "Get started" is tapped. */
+/** The landing page, shown each time the app opens; "Get started" leads to My syndicates. */
 @Composable
 fun WelcomeScreen(onGetStarted: () -> Unit) {
     val colors = MaterialTheme.colorScheme
@@ -83,7 +84,8 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                 Image(
                     painter = painterResource(R.mipmap.ic_launcher_foreground),
                     contentDescription = null,
-                    modifier = Modifier.size(112.dp),
+                    // The icon art keeps a margin for launcher masks; enlarge it so the logo fills the circle.
+                    modifier = Modifier.size(112.dp).graphicsLayer(scaleX = 1.45f, scaleY = 1.45f),
                 )
             }
             Spacer(Modifier.height(20.dp))
